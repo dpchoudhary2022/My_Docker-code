@@ -1,0 +1,728 @@
+##################################################.................DOCKER.........................##################################################
+##################################################................DOCKER.........................###################################################
+# Docker is advanced version of virtualization.
+# Docker used containerization .
+# docker is opensource centralisied plateform to create,deploy and run application.
+# docker install on any "OS" but docker engine runs natively on linux.
+# written in "GO" language.
+# docker is a tool that performs "OS" level virtualization also known as contanerization.
+# docker is a set of "PASS" that uses "OS" level virtualization whereas 'VMWARE' uses hardware level virtualisation.
+
+#CONTAINER---->
+# CONTAINER is light weight
+# container have an "OS" with 60 mb file size which is negligible.
+# when we pull images from dockerhub,container will be created (by downloading its dependencies/software in layered form).
+#ADVANTAGES OF DOCKER-
+
+# no pre-allocation of RAM
+# less cost 
+# iit is a light weight.
+# runs on phycical hardware/virtual hardware or on the cloud.
+# can reuse the image.
+# CI eeficiency(continuous integration)- docker enables us to build a container image and use that same image across every step of the deployment .
+# it took very less time to create container.
+
+DISADVANTAGES OF DOCKER-
+
+# Docker doesn't provide cross-plateform compatibility means if application is designed to run in docker container on windows then its can't run linux and vice versa.
+# difficult to manage large amount of containers
+# no solution for data recovery and backup.
+# docker is not a good solution for application that requires rich GUI.
+# NOTE- docker is suitable when the deployment "OS" and testing "OS" both are same.
+
+# for example-
+# ubuntu(developement os)-------> centos(testing os) = docker is not suitable
+# ubuntu( dev.os)---------------> ubuntu(testing os) = docker is suitable
+# cent os(dev.os)---------------> cent os(testing os) = docker is suitable
+#
+
+# 
+# IN AMAZON LINUX EC2
+1-to check docker version 
+$ sudo yum info docker
+$ docker --version 
+$ docker -v
+
+2- to install docker 
+$ sudo yum install docker
+
+3- enable docker service 
+$ sudo systemctl enable docker.service
+
+4- start the docker service 
+$ sudo systemctl start docker.service
+
+5- Get the docker service status on your AMI instance, run:
+$ 
+
+6- How to control docker service
+Use the systemctl command as follows:
+
+sudo systemctl start docker.service   #<-- start the service
+sudo systemctl stop docker.service    #<-- stop the service
+sudo systemctl restart docker.service #<-- restart the service
+sudo systemctl status docker.service  #<-- get the service status
+
+7- to find out images in docker hub   
+$ docker search jenkins   #<-- here we search jenkins image
+
+8- to download images from dockerhub to local machine
+$ docker pull jenkins  #<-- here we pull jenkins image
+
+9- to create & run container and enter into container 
+$ docker run -it --name container1 ubuntu /bin/bash      #<-- it = interactive mode and image name= ubuntu which we download and contaner name= container1
+
+o/p->
+root@73fc7f5a7c38:/# we are in under container now
+
+root@73fc7f5a7c38:/# exit  #<-- to come out from container and also container is stopped
+
+10- to see running container 
+$ docker ps 
+
+11- to see all container (running + stopped)
+$ docker ps -a
+
+12- to start container 
+$ docker start container1  #<-- container name= container1 (which we want to start )
+
+13- to stop container
+$ docker stop container1   #<-- here we want to stop container1
+
+14- to go inside container ( enter into container)
+$ docker attach container1
+
+15- to delete a container
+$ docker rm container1
+###################################################################################################################################################################################
+###################################################################################################################################################################################
+
+
+16- create docker image from running/stopped container
+
+steps are- 
+# first create $ run container
+$ docker run -it --name container1 ubuntu /bin/bash 
+
+$ cd /tmp
+
+$ touch file1 file2 file3
+
+$ control+p and control+q from keyboard  #<-- to comeout from container without stopping container ( if problem then use- exit command/ restart container later)
+
+# now create image from container(container1) by using docker commit command-
+
+$ docker commit container1 updateimage  #<-- new image name= updateimage
+
+# after creating new image (updateimage) we want to create a container(container2) from this image
+
+$ docker run -it --name container2 updateimage /bin/bash
+# o/p-->
+root@dc75d9a6f7d2:/# we are inside the container
+
+$ ls
+$ cd tmp/
+$ ls
+# o/p--> it will show file1 file2 file3 
+
+
+
+#########################################################################################################################################################################
+#########################################################################################################################################################################
+
+######################################................DOCKERFILE........................#################################################################################
+######################################................DOCKERFILE........................#################################################################################
+
+# Dockerfile is basically a textfile. it includes some set of commands.
+# Automation of docker image creation 
+# docker components are- 
+# FROM- for base image, this command must be on top
+# RUN-  to execute commands .it will create a layer in image
+# MAINTAINER- author/owner/description
+# COPY- copy files from local system(docker vm) and we need to provide source/destination.but can't be download files from internet and remote repo.
+# ADD- similar to "COPY" but it provide a feature to download files from internet also we extract files at docker image side.
+# EXPOSE- to expose ports, such as port 8080 for tomcat and port 80 for nginx etc.
+# WORKDIR- to set working directory for a container
+# CMD- execute commands but during container creation.
+# ENTRYPOINT- similar to "CMD" but has higher priority over "CMD". first commands will be executed by "ENTRYPOINT" only.
+# ENV- environment variable
+
+# HOW TO CREATE DOCKERFILE
+
+example-1
+1-create a file named Dockerfile  ('D' always capital in Dockerfile) AND
+2-add instruction in Dockerfile
+
+
+$ vi Dockerfile
+
+FROM ubuntu
+RUN echo "i am planning to start my career in software industry soon" > /tmp/testfile
+
+save and exit vi 
+
+
+3-build Dockerfile to create an image
+$ docker build -t myimage . #<--  here -t is tag = myimage(tag name given by us) and dot . is current working directory
+
+o/p-> Step 1/2 : FROM ubuntu
+ ---> 27941809078c
+Step 2/2 : RUN echo "i am planning to start my career in software industry" > /tmp/testfile
+ ---> Running in 1cc8ab6cd8fb
+Removing intermediate container 1cc8ab6cd8fb
+ ---> 4cee9ad52abd
+Successfully built 4cee9ad52abd
+Successfully tagged myimage:latest
+
+# we can check images by
+$ docker images
+
+
+4-create container from this image
+$ docker run -it --name mycontainer myimage /bin/bash
+
+o/p--> root@bcc944741adf:/# we are inside the container
+
+$ ls
+$ cd tmp/
+$ ls
+
+o/p--> it shown- testfile
+
+$ cat testfile
+
+o/p--> i am planning to start my career in software industry
+
+-------------------------------------------------------------------------
+
+example of dockerfile- 
+
+vi Dockerfile
+
+FROM ubuntu
+WORKDIR /tmp
+RUN echo "i am searching jobs in devops industry in north india" > /tmp/testfile
+ENV myname dpchoudhary
+COPY testfile1 /tmp
+ADD test tar.gz /tmp
+
+save and exit vi
+
+# NOTE- we have to create two files - testfile1 and test 
+$ touch testfile1
+$ touch test
+$ tar -cvf test.tar test
+
+$ gzip test.tar
+$ ls
+
+o/p<-- Dockerfile  test  testfile1  test.tar.gz
+
+$ docker build -t myimage2 .   #--> myimage2 is tag name given here
+
+o/p--> Step 1/6 : FROM ubuntu
+ ---> 27941809078c
+Step 2/6 : WORKDIR /tmp
+ ---> Running in 4d32936d383f
+Removing intermediate container 4d32936d383f
+ ---> 28bff446515d
+Step 3/6 : RUN echo "i am searching jobs in devops industry in north india" > /tmp/testfile
+ ---> Running in 2da9c88570b2
+Removing intermediate container 2da9c88570b2
+ ---> 0f7db1c164c0
+Step 4/6 : ENV myname dpchoudhary
+ ---> Running in 2052a1479dca
+Removing intermediate container 2052a1479dca
+ ---> e2b96a5916af
+Step 5/6 : COPY testfile1 /tmp
+ ---> 788160711475
+Step 6/6 : ADD test.tar.gz /tmp
+ ---> c9dfffb25562
+Successfully built c9dfffb25562
+Successfully tagged myimage2:latest
+
+
+# Now create container from this image(myimage2)-
+$ docker run -it --name mycontainer2 myimage2 /bin/bash
+
+o/p--> root@c7bceb1378b9:/tmp# we are inside the container now
+
+$ ls
+o/p--> test  testfile  testfile
+
+$ cat testfile1
+o/p--> i am searching jobs in devops industry in north india
+
+$ echo $myname
+o/p--> dpchoudhary
+
+###############################################################################################################################################################################
+######################################.................DOCKER VOLUME:HOW TO SHARE IT.......................############################################
+######################################.................DOCKER VOLUME:HOW TO SHARE IT.......................############################################
+####################################-------------------CONTAINER TO CONTAINER...................###############################################################
+
+# volume is simply a directory inside our container
+# first we have to declare this directory as a volume and then share it
+# even if we stop container, still we can access volume
+# volume will be created in one container
+# we can  declare a directory as a volume  only while creating a container
+# we can't create volume from existing container
+# we can share one voume across any number of containers
+# volume will not be included when we update an image
+# we mapped volumes in two ways- 
+# container <--> container and host <--> container
+
+# Benifits of volume- 
+# decoupling container from storage (NO DATA LOSS WHEN WE DELETE CONTAINER)
+# share volume among different containers
+# attach volume to containers
+# on deleting containers volume doesn't delete
+
+example-
+# METHOD-1
+
+vi Dockerfile
+
+FROM ubuntu
+VOLUME ["/myvolume1"]
+
+save and exit vi
+
+
+# create an image from this dockerfile-
+$ docker build -t myimage3 .
+
+o/p-->Step 1/2 : FROM ubuntu
+ ---> 27941809078c
+Step 2/2 : VOLUME ["/myvolume1"]
+ ---> Running in 4551a52b56bf
+Removing intermediate container 4551a52b56bf
+ ---> 3544bbd30bff
+Successfully built 3544bbd30bff
+Successfully tagged myimage3:latest
+
+
+
+# now create container from this image-
+$ docker run -it --name mycontainer3 myimage3 /bin/bash
+
+o/p--> root@247eac1d1d7c:/# we are inside the container 
+
+$ ls
+o/p--> myvolume1 shown here
+
+$ cd myvolume1/
+$ touch file1 file2 file3
+$ touch abc def ghi
+$ exit
+
+# now share volume to another container (share with container4/we create in below)
+# container <-----> container
+
+$ docker run -it --name mycontainer4 --privileged=true --volumes-from mycontainer3 ubuntu /bin/bash
+o/p--> root@3f72137499de:/# now we are inside the container (this is mycontainer4)
+
+
+$ ls
+$ cd myvolume1/
+$ ls
+o/p--> abc  def  file1  file2  file3  ghi  (all file shown here )
+
+
+# we can also create some files here in mycontainer4 and check on mycontainer3
+
+$ touch dpfile1 dpfile2 dpfile3
+$ exit
+
+$ docker start mycontainer3
+$ docker attach mycontainer3
+$ ls
+$ cd myvolume1/
+o/p-->abc  def  dpfile1  dpfile2  dpfile3  file1  file2  file3  ghi (all files shown here)
+
+#######################>>>>>>>>>...... OR.........>>>>>>>>>>>>>>##################################################
+# METHOD-2
+ # WE CAN CREATE VOLUME BY COMMAND DIRECTLY AND SHARE WITH OTHER CONTAINER AS WELL 
+
+## NOW WE ARE CREATE VOLUME BY USING COMMAND
+$ docker run -it --name mycontainer5 -v /myvolume2 ubuntu /bin/bash
+
+$ ls
+$ cd myvolume2/
+$ touch myfile1 myfile2 myfile3 
+$ exit
+
+# Now create one more container(mycontainer6) and share myvolume2 with this container
+$ docker run -it --name mycontainer6 --privileged=true --volumes-from mycontainer5 ubuntu /bin/bash
+o/p--> root@31cb5c1c0b9f:/# WE are inside the mycontainer6
+
+$ ls
+$ cd myvolume2/
+$ ls
+o/p--> myfile1 myfile2 myfile3 
+
+# WE CAN ALSO CREATE SOME FILES HERE IN mycontainer6 and CHECK on mycontainer5 ( volumes are shared from both containers)
+
+$ touch xyz abc yyy zzz
+$ exit
+
+
+$ docker start mycontainer5
+$ docker attach mycontainer5
+$ ls
+$ cd myvolume2/
+$ ls
+o/p--> xyz abc yyy zzz
+#########################################################################################################################################################
+
+######################################.................DOCKER VOLUME:HOW TO SHARE IT.......................##########################################
+####################################-------------------HOST TO CONTAINER...................##########################################################
+
+
+IN EC2 MACHINE : [root@ip-172-31-36-216 ec2-user]#
+
+$ pwd
+o/p-->/home/ec2-user
+
+$ ls
+o/p-->Dockerfile  test  testfile1  test.tar.gz  ( these files available here/if no files then just create some files)
+
+# NOW create container and mapped with host
+
+
+$ docker run -it --name hostcontainer -v /home/ec2-user:/mycontainer7 --privileged=true ubuntu /bin/bash
+
+HINT- here- /home/ec2-user(directory/path) is mapped (:/)  with mycontainer7
+
+o/p--> root@1ed4b728e04f:/# we are inside the  mycontainer7
+
+$ ls
+$ cd mycontainer7/
+$ ls
+o/p-->Dockerfile  test  test.tar.gz  testfile1 ( these are also available on /home/ec2-user)
+
+# WE CAN ALOS CREATE SOME FILES HERE AND CHECHK ON /home/ec2-user directory
+
+$ touch madrasfile allahabadfile jaipurfile
+
+$ exit
+
+[root@ip-172-31-36-216 ec2-user]# ls
+o/p--> allahabadfile  Dockerfile  jaipurfile  madrasfile  test  testfile1  test.tar.gz 
+
+################################################################################################################################################################
+
+# IMPORTANT COMMANDS ARE-
+
+1- docker volume ls
+2- docker volume create <volume name>
+3- docker volume rm <volume name>
+4- docker volume prune (it will removed all unused docker volume)
+5- docker volume inspect <volume name>
+6- docker container inspect <container name>
+#################################################################################################################################################################
+
+##################################..................DOCKER PORT EXPOSE.......................####################################################################
+##################################..................DOCKER PORT EXPOSE.......................####################################################################
+
+# Access the container from internet under which any application/server is running.
+# container = NO IP Address 
+# ec2-instance = have IP Address
+# 0 - 65535 logical ports avalable
+# mapped to ec2 <----> container (port 80 <----->port 80)
+
+# create and run container but not enter into container because we used: -td
+$ docker run -td --name webserver -p 80:80 ubuntu /bin/bash    
+
+NOTE- webserver = container name
+NOTE- -p (port/publish) used to global access of container over internet/from anywhere
+NOTE- if we used 'expose' then container will be communicate within internally 
+
+$ docker ps 
+$ docker port webserver
+
+o/p--> 80/tcp -> 0.0.0.0:80
+       80/tcp -> :::80
+
+
+
+$ docker exec -it webserver /bin/bash
+o/p--> root@52ec9dcc4ad6:/# we are inside the container/webserver
+
+$ apt-get update -y  ( we use 'apt' because image we used ubuntu)
+$ apt-get install apache-2 -y
+
+$  cd /var/www/html
+$  echo "this is for testing apache2 on webserver" >index.html
+
+
+
+$ service apache2 start   ( or service apache2 restart)
+
+# now copy the public ip of ec2-instance and paste on browser
+# output is - this is for testing apache2 on webserver
+
+NOTE- if we are not write anything in echo and skip the steps cd /var/wwww/html then apache default page opens in browser
+
+$ exit
+
+
+$ docker run -td --name myjenkins -p 8080:8080 jenkins/jenkins
+
+# now copy public ip of ec2:8080 paste on browser /jenkins will opens
+
+NOTE- allow port on inbound rule- http - anywhere and ssh=anywhere and allow 8080 port also 
+NOTE- if we stop/delete the container then mapped port communication are collapsed/not worked
+
+#########################################################################################################################################################################
+########################################................DOCKER PUSH AND PULL.......................######################################################################
+########################################................DOCKER PUSH AND PULL.......................######################################################################
+
+
+$ docker run -it --name container11 ubuntu /bin/bash
+
+o/p--> root@3d829c0346a2:/# we are inside the container now
+
+$ touch file1 file2 file3 filez fileabcd2
+$ ls
+$ exit
+
+$ docker login
+# it asks username/password
+# after entering details /login successful
+
+# now create image of this container
+$ docker commit container11 image11
+
+# give tag to our image
+$ docker tag image11 dpchoudhary/projectsample2  #--> my dockerid/tag name
+
+$ docker push dpchoudhary/projectsample2   #--> after push check dockerhub account
+
+$ docker pull dpchoudhary/projectsample2   #--> my dockerid/tag name
+$ docker images
+
+# now create another container from this(which pull in above step) image
+
+$ docker run -it --name contaner12 dpchoudhary/projectsample2 /bin/bash
+
+
+# important commands-
+
+$ docker rmi $(docker images -q)  #--> to delete all images
+$ docker rm $(docker ps -a -q)    #--> to delete all stopped containers
+$ docker stop $(docker ps -a -q)  #--> to stop all containers
+$ docker kill $(docker ps -q)     #--> kill all running containers
+$ docker system df                #--> Get docker container disk utilization
+
+$ docker image prune -a           #--> clean up and delete all unused container images
+
+$ docker image prune -a –filter "until=24h"  #--> clean up container images that have been created over 24 hours ago run
+
+$ docker container prune          #--> remove all stopped containers.
+
+###########################################################################################################################################################################
+###########################################################################################################################################################################
+
+
+# create and run container with specify ubuntu  image version
+
+$ docker run -it --name containernew1 ubuntu:14.04 /bin /bash
+
+#########################################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
