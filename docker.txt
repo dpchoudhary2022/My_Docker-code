@@ -101,14 +101,14 @@ $ docker rm container1
 16- create docker image from running/stopped container
 
 steps are- 
-# first create $ run container
+# first create and run container
 $ docker run -it --name container1 ubuntu /bin/bash 
 
 $ cd /tmp
 
 $ touch file1 file2 file3
 
-$ control+p and control+q from keyboard  #<-- to comeout from container without stopping container ( if problem then use- exit command/ restart container later)
+$ control+p and control+q from keyboard  #<-- to come out from container without stopping container ( if problem then use- exit command/ restart container later)
 
 # now create image from container(container1) by using docker commit command-
 
